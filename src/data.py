@@ -25,7 +25,7 @@ def get_dataloaders(batch_size=128, data_dir="./data"):
     train_dataset = datasets.CIFAR10(
         root=data_dir,
         train=True,
-        download=True,
+        download=False,
         transform=train_transform
     )
 
