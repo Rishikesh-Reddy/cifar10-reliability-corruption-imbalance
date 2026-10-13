@@ -34,7 +34,7 @@ def evaluate(model, loader, device):
     return loss, accuracy
 
 
-def train_model(epochs=10, batch_size=128, learning_rate=0.001):
+def train_model(epochs=10, batch_size=128, learning_rate=0.001, num_workers=0):
     device = torch.device(
         "cuda" if torch.cuda.is_available()
         else "mps" if torch.backends.mps.is_available()
@@ -43,7 +43,10 @@ def train_model(epochs=10, batch_size=128, learning_rate=0.001):
 
     print("Using device:", device)
 
-    train_loader, test_loader = get_dataloaders(batch_size=batch_size)
+    train_loader, test_loader = get_dataloaders(
+        batch_size=batch_size,
+        num_workers=num_workers
+    )
 
     model = BaselineCNN().to(device)
 

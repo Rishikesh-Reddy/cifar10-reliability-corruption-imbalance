@@ -1,9 +1,4 @@
-import torch
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
-
-
-def get_dataloaders(batch_size=128, data_dir="./data"):
+def get_dataloaders(batch_size=128, data_dir="./data", num_workers=0):
     train_transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
         transforms.RandomCrop(32, padding=4),
@@ -32,7 +27,7 @@ def get_dataloaders(batch_size=128, data_dir="./data"):
     test_dataset = datasets.CIFAR10(
         root=data_dir,
         train=False,
-        download=True,
+        download=False,
         transform=test_transform
     )
 
@@ -40,25 +35,69 @@ def get_dataloaders(batch_size=128, data_dir="./data"):
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=2
+        num_workers=num_workers
     )
 
     test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=2
+        num_workers=num_workers
     )
 
     return train_loader, test_loader
 
 
-if __name__ == "__main__":
-    train_loader, test_loader = get_dataloaders()
+def get_mobilenet_dataloaders(
+    batch_size=128,
+    data_dir="./data",
+    num_workers=0
+):
+    train_transform = transforms.Compose([
+        transforms.Resize((96, 96)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            (0.485, 0.456, 0.406),
+            (0.229, 0.224, 0.225)
+        )
+    ])
 
-    images, labels = next(iter(train_loader))
+    test_transform = transforms.Compose([
+        transforms.Resize((96, 96)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            (0.485, 0.456, 0.406),
+            (0.229, 0.224, 0.225)
+        )
+    ])
 
-    print("Train batches:", len(train_loader))
-    print("Test batches:", len(test_loader))
-    print("Image batch shape:", images.shape)
-    print("Label batch shape:", labels.shape)
+    train_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=True,
+        download=False,
+        transform=train_transform
+    )
+
+    test_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=False,
+        download=False,
+        transform=test_transform
+    )
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers
+    )
+
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers
+    )
+
+    return train_loader, test_loader

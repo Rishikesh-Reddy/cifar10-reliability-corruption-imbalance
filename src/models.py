@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+from torchvision import models
 
 
 class BaselineCNN(nn.Module):
@@ -6,15 +8,15 @@ class BaselineCNN(nn.Module):
         super().__init__()
 
         self.features = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.Conv2d(3, 32, 3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2),
 
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.Conv2d(32, 64, 3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2),
 
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.Conv2d(64, 128, 3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2),
         )
@@ -32,12 +34,25 @@ class BaselineCNN(nn.Module):
         return self.classifier(x)
 
 
+def get_mobilenet(num_classes=10):
+    model = models.mobilenet_v2(
+        weights=models.MobileNet_V2_Weights.DEFAULT
+    )
+
+    for param in model.features.parameters():
+        param.requires_grad = False
+
+    model.classifier[1] = nn.Linear(
+        model.last_channel,
+        num_classes
+    )
+
+    return model
+
+
 if __name__ == "__main__":
-    import torch
+    cnn = BaselineCNN()
+    mobile = get_mobilenet()
 
-    model = BaselineCNN()
-    x = torch.randn(8, 3, 32, 32)
-    y = model(x)
-
-    print("Input shape:", x.shape)
-    print("Output shape:", y.shape)
+    print("Baseline CNN ready")
+    print("MobileNetV2 ready")
