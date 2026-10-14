@@ -45,7 +45,7 @@ def train_mobilenet(epochs=5, batch_size=128, lr=0.001, num_workers=0):
     print("Using device:", device)
 
     train_loader, test_loader = get_mobilenet_dataloaders(
-        batch_size=batch_size
+        batch_size=batch_size,
         num_workers=num_workers
     )
 
@@ -109,4 +109,4 @@ def train_mobilenet(epochs=5, batch_size=128, lr=0.001, num_workers=0):
 
 
 if __name__ == "__main__":
-    train_mobilenet(epochs=5)
+    train_mobilenet(epochs=5, num_workers=4)
