@@ -1,0 +1,15 @@
+experiment,condition,severity,test_accuracy,test_loss
+Baseline CNN,Gaussian Noise,0.00,76.18,0.6955
+MobileNetV2,Gaussian Noise,0.00,77.34,0.6538
+Baseline CNN,Clean,0.0,76.18,0.6955
+MobileNetV2,Clean,0.0,77.34,0.6538
+Baseline CNN,Gaussian Noise,0.05,66.29,0.9660
+Baseline CNN,Gaussian Noise,0.10,44.41,1.6939
+Baseline CNN,Gaussian Noise,0.20,15.42,4.5635
+MobileNetV2,Gaussian Noise,0.05,13.05,3.0199
+MobileNetV2,Gaussian Noise,0.10,10.12,3.3666
+MobileNetV2,Gaussian Noise,0.20,10.01,2.9746
+Baseline CNN,Gaussian Blur,0.5,71.65,0.7968
+Baseline CNN,Gaussian Blur,1.0,46.86,1.7035
+Baseline CNN,Gaussian Blur,1.5,36.70,2.1187
+Baseline CNN,Imbalanced Training,0.2,64.08,0.9930
