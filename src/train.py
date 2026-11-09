@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+from utils import set_seed
 from data import get_dataloaders
 from models import BaselineCNN
 
@@ -35,6 +36,7 @@ def evaluate(model, loader, device):
 
 
 def train_model(epochs=10, batch_size=128, learning_rate=0.001, num_workers=0):
+    set_seed(42)
     device = torch.device(
         "cuda" if torch.cuda.is_available()
         else "mps" if torch.backends.mps.is_available()

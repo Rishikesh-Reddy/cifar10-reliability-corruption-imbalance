@@ -5,6 +5,7 @@ import torch.optim as optim
 from data import get_imbalanced_dataloader, get_dataloaders
 from models import BaselineCNN
 from train import evaluate
+from utils import set_seed
 
 
 def train_imbalanced(
@@ -13,6 +14,7 @@ def train_imbalanced(
     lr=0.001,
     num_workers=0
 ):
+    set_seed(42)
     device = torch.device(
         "cuda" if torch.cuda.is_available()
         else "mps" if torch.backends.mps.is_available()
