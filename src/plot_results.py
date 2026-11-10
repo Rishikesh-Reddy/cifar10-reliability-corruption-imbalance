@@ -78,26 +78,49 @@ plt.savefig(
 plt.close()
 
 
-# 3. Per-class accuracy after imbalanced training
-plt.figure(figsize=(9, 5))
+# 3. Balanced vs imbalanced per-class accuracy
+
+plt.figure(figsize=(10, 5))
+
+x = range(len(classes))
+width = 0.35
 
 plt.bar(
-    class_names,
-    classes["accuracy"]
+    [i - width / 2 for i in x],
+    classes["balanced_accuracy"],
+    width=width,
+    label="Balanced Training"
+)
+
+plt.bar(
+    [i + width / 2 for i in x],
+    classes["imbalanced_accuracy"],
+    width=width,
+    label="Imbalanced Training"
 )
 
 plt.xlabel("CIFAR-10 Class")
 plt.ylabel("Test Accuracy (%)")
-plt.title("Per-Class Accuracy After Imbalanced Training")
+plt.title("Balanced vs Imbalanced Per-Class Accuracy")
+
+plt.xticks(
+    x,
+    classes["class"],
+    rotation=30,
+    ha="right"
+)
+
 plt.ylim(0, 100)
-plt.xticks(rotation=30, ha="right")
+plt.legend()
 plt.grid(axis="y", alpha=0.3)
 plt.tight_layout()
+
 plt.savefig(
-    "results/imbalanced_per_class_accuracy.png",
+    "results/balanced_vs_imbalanced.png",
     dpi=300,
     bbox_inches="tight"
 )
+
 plt.close()
 
 
