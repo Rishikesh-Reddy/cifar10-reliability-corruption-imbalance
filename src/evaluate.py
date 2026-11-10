@@ -78,6 +78,35 @@ def evaluate_model(
 
     return all_labels, all_predictions
 
+def per_class_accuracy(
+    all_labels,
+    all_predictions
+):
+    correct = [0] * 10
+    total = [0] * 10
+
+    for label, prediction in zip(
+        all_labels,
+        all_predictions
+    ):
+        total[label] += 1
+
+        if label == prediction:
+            correct[label] += 1
+
+    accuracies = []
+
+    for i in range(10):
+        accuracy = 100 * correct[i] / total[i]
+        accuracies.append(accuracy)
+
+        print(
+            f"{CLASS_NAMES[i]}: "
+            f"{accuracy:.2f}%"
+        )
+
+    return accuracies
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -95,7 +124,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    evaluate_model(
+    labels, predictions = evaluate_model(
         model_path=args.model,
         num_workers=args.num_workers
+    )
+
+    print("\nPer-class accuracy:")
+
+    per_class_accuracy(
+        labels,
+        predictions
     )
