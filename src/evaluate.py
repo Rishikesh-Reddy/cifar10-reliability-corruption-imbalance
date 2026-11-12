@@ -1,6 +1,13 @@
 import argparse
 import torch
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    confusion_matrix,
+    ConfusionMatrixDisplay
+)
+
+import matplotlib.pyplot as plt
 
 from data import get_dataloaders
 from models import BaselineCNN
@@ -107,6 +114,41 @@ def per_class_accuracy(
 
     return accuracies
 
+def save_confusion_matrix(
+    labels,
+    predictions,
+    output_path
+):
+    cm = confusion_matrix(
+        labels,
+        predictions
+    )
+
+    display = ConfusionMatrixDisplay(
+        confusion_matrix=cm,
+        display_labels=CLASS_NAMES
+    )
+
+    fig, ax = plt.subplots(
+        figsize=(10, 8)
+    )
+
+    display.plot(
+        ax=ax,
+        xticks_rotation=45,
+        colorbar=False
+    )
+
+    plt.tight_layout()
+
+    plt.savefig(
+        output_path,
+        dpi=300,
+        bbox_inches="tight"
+    )
+
+    plt.close()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -122,6 +164,11 @@ if __name__ == "__main__":
         default=0
     )
 
+    parser.add_argument(
+        "--confusion-matrix",
+        default=None
+    )
+
     args = parser.parse_args()
 
     labels, predictions = evaluate_model(
@@ -129,9 +176,17 @@ if __name__ == "__main__":
         num_workers=args.num_workers
     )
 
+
     print("\nPer-class accuracy:")
 
     per_class_accuracy(
         labels,
         predictions
     )
+    
+    if args.confusion_matrix:
+        save_confusion_matrix(
+            labels,
+            predictions,
+            args.confusion_matrix
+        )
