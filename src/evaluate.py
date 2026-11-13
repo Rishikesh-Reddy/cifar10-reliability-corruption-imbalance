@@ -7,6 +7,9 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay
 )
 
+import csv
+import os
+
 import matplotlib.pyplot as plt
 
 from data import get_dataloaders
@@ -83,7 +86,12 @@ def evaluate_model(
     print(f"Accuracy: {accuracy * 100:.2f}%")
     print(f"Macro F1: {macro_f1:.4f}")
 
-    return all_labels, all_predictions
+    return (
+        all_labels,
+        all_predictions,
+        accuracy,
+        macro_f1
+    )
 
 def per_class_accuracy(
     all_labels,
@@ -150,6 +158,31 @@ def save_confusion_matrix(
     plt.close()
 
 
+def save_metrics(
+    output_path,
+    model_name,
+    accuracy,
+    macro_f1
+):
+    file_exists = os.path.exists(output_path)
+
+    with open(output_path, "a", newline="") as file:
+        writer = csv.writer(file)
+
+        if not file_exists:
+            writer.writerow([
+                "model",
+                "accuracy",
+                "macro_f1"
+            ])
+
+        writer.writerow([
+            model_name,
+            f"{accuracy * 100:.2f}",
+            f"{macro_f1:.4f}"
+        ])
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -169,9 +202,18 @@ if __name__ == "__main__":
         default=None
     )
 
+    parser.add_argument(
+        "--name",
+        default="model"
+    )
+
+    parser.add_argument(
+        "--save-metrics",
+        default=None
+    )
     args = parser.parse_args()
 
-    labels, predictions = evaluate_model(
+    labels, predictions, accuracy, macro_f1 = evaluate_model(
         model_path=args.model,
         num_workers=args.num_workers
     )
@@ -183,10 +225,18 @@ if __name__ == "__main__":
         labels,
         predictions
     )
-    
+
     if args.confusion_matrix:
         save_confusion_matrix(
             labels,
             predictions,
             args.confusion_matrix
+        )
+
+    if args.save_metrics:
+        save_metrics(
+            args.save_metrics,
+            args.name,
+            accuracy,
+            macro_f1
         )
