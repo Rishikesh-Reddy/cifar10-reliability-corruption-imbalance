@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import argparse
 
 from data import get_imbalanced_dataloader, get_dataloaders
 from models import BaselineCNN
@@ -89,7 +90,18 @@ def train_imbalanced(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--lr", type=float, default=0.001)
+    parser.add_argument("--num-workers", type=int, default=0)
+
+    args = parser.parse_args()
+
     train_imbalanced(
-        epochs=10,
-        num_workers=4
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        lr=args.lr,
+        num_workers=args.num_workers
     )

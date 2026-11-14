@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import argparse
 
 from utils import set_seed
 from data import get_mobilenet_dataloaders
@@ -36,7 +37,12 @@ def evaluate(model, loader, device):
     )
 
 
-def train_mobilenet(epochs=5, batch_size=128, lr=0.001, num_workers=0):
+def train_mobilenet(
+        epochs=5,
+        batch_size=128,
+        lr=0.001,
+        num_workers=0
+    ):
     set_seed(42)
     device = torch.device(
         "cuda" if torch.cuda.is_available()
@@ -111,4 +117,18 @@ def train_mobilenet(epochs=5, batch_size=128, lr=0.001, num_workers=0):
 
 
 if __name__ == "__main__":
-    train_mobilenet(epochs=5, num_workers=4)
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--epochs", type=int, default=5)
+    parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--lr", type=float, default=0.001)
+    parser.add_argument("--num-workers", type=int, default=0)
+
+    args = parser.parse_args()
+
+    train_mobilenet(
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        lr=args.lr,
+        num_workers=args.num_workers
+    )
