@@ -12,8 +12,8 @@ import os
 
 import matplotlib.pyplot as plt
 
-from data import get_dataloaders
-from models import BaselineCNN
+from data import get_dataloaders, get_mobilenet_dataloaders
+from models import BaselineCNN, get_mobilenet
 
 
 CLASS_NAMES = [
@@ -32,6 +32,7 @@ CLASS_NAMES = [
 
 def evaluate_model(
     model_path,
+    model_type="cnn",
     batch_size=128,
     num_workers=0
 ):
@@ -41,12 +42,25 @@ def evaluate_model(
         else "cpu"
     )
 
-    _, test_loader = get_dataloaders(
-        batch_size=batch_size,
-        num_workers=num_workers
-    )
+    if model_type == "mobilenet":
+        _, test_loader = get_mobilenet_dataloaders(
+            batch_size=batch_size,
+            num_workers=num_workers
+        )
+    else:
+        _, test_loader = get_dataloaders(
+            batch_size=batch_size,
+            num_workers=num_workers
+        )
 
-    model = BaselineCNN().to(device)
+    if model_type == "cnn":
+        model = BaselineCNN().to(device)
+
+    elif model_type == "mobilenet":
+        model = get_mobilenet().to(device)
+
+    else:
+        raise ValueError(f"Unknown model type: {model_type}")
 
     model.load_state_dict(
         torch.load(
@@ -211,10 +225,19 @@ if __name__ == "__main__":
         "--save-metrics",
         default=None
     )
+
+    parser.add_argument(
+        "--model-type",
+        choices=["cnn", "mobilenet"],
+        default="cnn"
+    )
+
+
     args = parser.parse_args()
 
     labels, predictions, accuracy, macro_f1 = evaluate_model(
         model_path=args.model,
+        model_type=args.model_type,
         num_workers=args.num_workers
     )
 
